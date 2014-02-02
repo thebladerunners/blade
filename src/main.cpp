@@ -19,7 +19,7 @@ using namespace std;
 using namespace boost;
 
 //
-// Global state
+// Global state  QmxhZGUgaXMgaW5zcGlyZWQgYnkgdGhlIG1vdmllIEJsYWRlIFJ1bm5lciAsIGEgY2xvbmVkIGNvaW4gYnkgQGNpbm5hbW9uX2NhcnRlcg0KcmVsZWFzZWQgaW4gaG9ub3Igb2YgdGhlIGdyZWF0IG1vdmllLg==
 //
 
 CCriticalSection cs_setpwalletRegistered;
