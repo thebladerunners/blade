@@ -1,4 +1,4 @@
-Name FehCoin
+Name Blade
 
 RequestExecutionLevel highest
 SetCompressor /SOLID lzma
@@ -6,11 +6,11 @@ SetCompressor /SOLID lzma
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.3.0
-!define COMPANY "FehCoin project"
+!define COMPANY "Blade"
 !define URL http://
 
 # MUI Symbol Definitions
-!define MUI_ICON "../share/pixmaps/FehCoin.ico"
+!define MUI_ICON "../share/pixmaps/Blade.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
@@ -19,8 +19,8 @@ SetCompressor /SOLID lzma
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER FehCoin
-!define MUI_FINISHPAGE_RUN $INSTDIR\FehCoin-qt.exe
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER Blade
+!define MUI_FINISHPAGE_RUN $INSTDIR\Blade-qt.exe
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -45,14 +45,14 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile FehCoin-0.3.0-win32-setup.exe
-InstallDir $PROGRAMFILES\FehCoin
+OutFile Blade-0.3.0-win32-setup.exe
+InstallDir $PROGRAMFILES\Blade
 CRCCheck on
 XPStyle on
 BrandingText " "
 ShowInstDetails show
 VIProductVersion 0.3.0.0
-VIAddVersionKey ProductName FehCoin
+VIAddVersionKey ProductName Blade
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
@@ -66,18 +66,18 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File ../release/FehCoin-qt.exe
+    File ../release/Blade-qt.exe
     File /oname=license.txt ../COPYING
     File /oname=readme.txt ../doc/README_windows.txt
     SetOutPath $INSTDIR\daemon
-    File ../src/FehCoind.exe
+    File ../src/Bladed.exe
     SetOutPath $INSTDIR\src
     File /r /x *.exe /x *.o ../src\*.*
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 
-    # Remove old wxwidgets-based-FehCoin executable and locales:
-    Delete /REBOOTOK $INSTDIR\FehCoin.exe
+    # Remove old wxwidgets-based-Blade executable and locales:
+    Delete /REBOOTOK $INSTDIR\Blade.exe
     RMDir /r /REBOOTOK $INSTDIR\locale
 SectionEnd
 
@@ -87,8 +87,8 @@ Section -post SEC0001
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory $SMPROGRAMS\$StartMenuGroup
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\FehCoin.lnk" $INSTDIR\FehCoin-qt.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall FehCoin.lnk" $INSTDIR\uninstall.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Blade.lnk" $INSTDIR\Blade-qt.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall Blade.lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
@@ -99,11 +99,11 @@ Section -post SEC0001
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoModify 1
     WriteRegDWORD HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" NoRepair 1
 
-    # FehCoin: URI handling disabled for 0.6.0
-        WriteRegStr HKCR "FehCoin" "URL Protocol" ""
-        WriteRegStr HKCR "FehCoin" "" "URL:FehCoin"
-        WriteRegStr HKCR "FehCoin\DefaultIcon" "" $INSTDIR\FehCoin-qt.exe
-        WriteRegStr HKCR "FehCoin\shell\open\command" "" '"$INSTDIR\FehCoin-qt.exe" "$$1"'
+    # Blade: URI handling disabled for 0.6.0
+        WriteRegStr HKCR "Blade" "URL Protocol" ""
+        WriteRegStr HKCR "Blade" "" "URL:Blade"
+        WriteRegStr HKCR "Blade\DefaultIcon" "" $INSTDIR\Blade-qt.exe
+        WriteRegStr HKCR "Blade\shell\open\command" "" '"$INSTDIR\Blade-qt.exe" "$$1"'
 SectionEnd
 
 # Macro for selecting uninstaller sections
@@ -121,7 +121,7 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK $INSTDIR\FehCoin-qt.exe
+    Delete /REBOOTOK $INSTDIR\Blade-qt.exe
     Delete /REBOOTOK $INSTDIR\license.txt
     Delete /REBOOTOK $INSTDIR\readme.txt
     RMDir /r /REBOOTOK $INSTDIR\daemon
@@ -131,9 +131,9 @@ SectionEnd
 
 Section -un.post UNSEC0001
     DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall FehCoin.lnk"
-    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\FehCoin.lnk"
-    Delete /REBOOTOK "$SMSTARTUP\FehCoin.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall Blade.lnk"
+    Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Blade.lnk"
+    Delete /REBOOTOK "$SMSTARTUP\Blade.lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     Delete /REBOOTOK $INSTDIR\debug.log
     Delete /REBOOTOK $INSTDIR\db.log
@@ -141,7 +141,7 @@ Section -un.post UNSEC0001
     DeleteRegValue HKCU "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKCU "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKCU "${REGKEY}"
-    DeleteRegKey HKCR "FehCoin"
+    DeleteRegKey HKCR "Blade"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
     RmDir /REBOOTOK $INSTDIR
     Push $R0
