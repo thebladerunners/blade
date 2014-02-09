@@ -7,8 +7,7 @@ Scrypt
 Linear Difficulty Retarget
 100 Confirms
 2019 Tokens Per Block
-Until block 2019
-then 19 Tokens per block
+
 Maximum of 16305444 Tokens Proof Of Work
-Default P2P Port: 45565 
-Default RPC Port: 45567
+Default P2P Port: 45555 
+Default RPC Port: 45557
