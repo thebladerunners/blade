@@ -33,8 +33,8 @@ static const unsigned int MAX_INV_SZ = 50000;
 static const int64 MIN_TX_FEE = 0.1 * CENT;
 static const int64 MIN_RELAY_TX_FEE = 0.1 * CENT;
 static const int64 MAX_MONEY = 16305444 * COIN;
-static const int64 MAX_MINT_PROOF_OF_WORK = 2019 * COIN;
-static const int64 MAX_MINT_PROOF_OF_WORK_LEGACY = 2019 * COIN;
+static const int64 MAX_MINT_PROOF_OF_WORK = 19 * COIN;
+static const int64 MAX_MINT_PROOF_OF_WORK_LEGACY = 19 * COIN;
 static const int64 MAX_MINT_PROOF_OF_STAKE = 1 * CENT;
 
 static const int64 MIN_TXOUT_AMOUNT = MIN_TX_FEE;

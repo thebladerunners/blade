@@ -10,5 +10,5 @@ Linear Difficulty Retarget
 Until block 2019
 then 19 Tokens per block
 Maximum of 16305444 Tokens Proof Of Work
-Default P2P Port: 45555 
-Default RPC Port: 45557
+Default P2P Port: 45565 
+Default RPC Port: 45567
