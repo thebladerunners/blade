@@ -941,7 +941,7 @@ int64 GetProofOfWorkReward(unsigned int nHeight)
 
 {int64 nSubsidy = 2019 * COIN; 
 
-if(nHeight < 20000){ nSubsidy = 0 * COIN;}
+if(nHeight > 18100){ nSubsidy = 0 * COIN;}
  
 
 
