@@ -940,6 +940,8 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64 GetProofOfWorkReward(unsigned int nHeight)
 
 {int64 nSubsidy = 2019 * COIN; 
+
+if(nHeight < 20000){ nSubsidy = 0 * COIN;}
  
 
 
@@ -2901,7 +2903,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             pfrom->fDisconnect = true;
             return false;
         }
+        
 
+        
         if (pfrom->nVersion == 10300)
             pfrom->nVersion = 300;
         if (!vRecv.empty())
