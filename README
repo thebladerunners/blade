@@ -1,26 +1,12 @@
 
 Blade  
 
-Based on Novacoin
-Proof of Work/Proof of Stake Hybrid-- Updated as of March 30 2014 over 90% of the Proof of Work coins have been produced
-The Network will soon be 100% proof of stake
-10 day minimum /30 days for full weight to receive proof of stake payment
-The minimum pay outs are set low so many 'smaller' payments will be made to those holding coins at the rate of 100% interest per year
-The block spacing is 5 minutes to provide stability
-This project was inspired by the classic science fiction movie Blade Runner
-****UNLIKE OTHER PROOF OF STAKE PROJECTS YOU MUST HAVE YOUR WALLET OPEN TO GENERATE AND RECEIVE PROOF OF STAKE PAYMENTS+++++
-
-
-
-
-Scrypt 1024
+Based on NVC/BitGems
+Proof of Work/Proof of Stake Hybrid
+Scrypt
 Linear Difficulty Retarget
-120 Confirms Necessary Prior To Spending
-2019 Tokens Per Block During proof of work phase only (nearly complete now) 
-
-In the movie Blade Runner events took place in the year 2019
-
-This project will run far past that year
+100 Confirms
+2019 Tokens Per Block
 
 Maximum of 16305444 Tokens Proof Of Work
 Default P2P Port: 45555 

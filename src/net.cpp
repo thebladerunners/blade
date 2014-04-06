@@ -1,15 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers The Litecoin Developers The Novacoin Developers The Blade Developers
-//
+// Copyright (c) 2009-2012 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-//  NOTE UNLIKE OTHER PROOF OF STAKE COINS YOU NEED YOUR CLIENT OPEN AND TURNED ON TO PRODUCE PROOF OF STAKE BLOCKS
-//  SO AS OF NOW MARCH 30 2014 THE NETWORK IS FUNCTIONING WELL BUT IT COULD FUNCTION BETTER IF MORE USERS WOULD LEAVE 
-//  THEIR WALLETS OPEN TO COLLECT THE PROOF OF STAKE -  ALMOST ALL PROOF OF WORK COINS ARE GONE AS OF THIS WRITING
-//  AS THE NETWORK BECOMES PROOF OF STAKE ONLY IT IS SET TO RUN FOREVER BUT YOU MUST BE CONNECTED TO BE AWARDED YOUR STAKE
-//  IF YOU WAIT A LONG TIME TO CONNECT YOU WILL STILL ON A MATH BASIS GET ABOUT THE SAME AVERAGE REWARD IN COIN SINCE YOUR
-//  COIN AGE WILL BE THERE BUT THE NETWORK WILL BE SMOOTHER AND RUN BETTER IF MORE PROPLE KEEP THEIR WALLETS RUNNING 
-
 
 #include "irc.h"
 #include "db.h"
@@ -1153,12 +1145,11 @@ void MapPort()
 
 
 // DNS seeds
-// Each pair gives a source name and a seed name.  THE BLADE NETWORK WOULD RUN MUCH BETTER IF MORE PEOPLE HAD OPEN NODES
+// Each pair gives a source name and a seed name.
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"107.170.123.55", "107.170.123.55"},
-	{"107.170.21.110", "107.170.21.110"},
+    {"", ""},
 };
 
 void ThreadDNSAddressSeed(void* parg)
@@ -1375,7 +1366,7 @@ void ThreadOpenConnections2(void* parg)
         if (fShutdown)
             return;
 
-        // Add seed nodes if IRC isn't working  --- THIS SECTION NEEDS MAJOR REWRITES IRC BANS COIN CLIENTS ALL OVER NOW ---- 
+        // Add seed nodes if IRC isn't working
         if (addrman.size()==0 && (GetTime() - nStart > 60) && !fTestNet)
         {
             std::vector<CAddress> vAdd;
