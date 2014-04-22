@@ -938,18 +938,14 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 
 // miner's coin base reward based on nBits
 int64 GetProofOfWorkReward(unsigned int nHeight)
+{
 
-{int64 nSubsidy = 2019 * COIN; 
+   int64 nSubsidy = 0;
 
-
- 
-
-
-
-
-
-    
-    return nSubsidy;
+   if (nHeight < 19750) {
+      nSubsidy = 2019 * COIN;
+   }
+   return nSubsidy;
 }
 		
 
@@ -962,7 +958,7 @@ int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nBits, unsigned int nTi
     {
         // Stage 2 of emission process is PoS-based. It will be active on mainNet since 20 Jun 2013.
 
-        CBigNum bnRewardCoinYearLimit = MAX_MINT_PROOF_OF_STAKE; // Base stake mint rate, 100% year interest
+        CBigNum bnRewardCoinYearLimit = MAX_MINT_PROOF_OF_STAKE; // Base stake mint rate, 10% year interest
         CBigNum bnTarget;
         bnTarget.SetCompact(nBits);
         CBigNum bnTargetLimit = bnProofOfStakeLimit;
@@ -976,7 +972,7 @@ int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nBits, unsigned int nTi
         //
         // nRewardCoinYear = 1 / (posdiff ^ 1/4)
 
-        CBigNum bnLowerBound = 1 * CENT; // Lower interest bound is 1% per year
+        CBigNum bnLowerBound = 20 * CENT; // Lower interest bound is 20.19% per year
         CBigNum bnUpperBound = bnRewardCoinYearLimit;
         while (bnLowerBound + CENT <= bnUpperBound)
         {
@@ -1011,9 +1007,14 @@ static const int64 nTargetSpacingWorkMax = 12 * nStakeTargetSpacing; // 2-hour
 // minimum amount of work that could possibly be required nTime after
 // minimum work required was nBase
 //
-unsigned int ComputeMinWork(unsigned int nBase, int64 nTime)
+unsigned int ComputeMinWork(unsigned int nBase, int64 nTime, bool fProofOfStake)
 {
-    CBigNum bnTargetLimit = bnProofOfWorkLimit;
+    CBigNum bnTargetLimit;
+    if (fProofOfStake) {
+         bnTargetLimit = bnProofOfStakeLimit;
+    } else {
+         bnTargetLimit = bnProofOfWorkLimit;
+    }
 
     CBigNum bnResult;
     bnResult.SetCompact(nBase);
@@ -2008,6 +2009,9 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot) const
     // These are checks that are independent of context
     // that can be verified before saving an orphan block.
 
+    CBlockLocator locator;
+    unsigned int nHeight = locator.GetBlockIndex()->nHeight;
+
     // Size limits
     if (vtx.empty() || vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
         return DoS(100, error("CheckBlock() : size limits failed"));
@@ -2051,12 +2055,12 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot) const
 		if (vtx[0].GetValueOut() > (IsProofOfWork()? MAX_MINT_PROOF_OF_WORK_LEGACY : 0))
 		    return DoS(50, error("CheckBlock() : coinbase reward exceeded %s > %s", 
 		               FormatMoney(vtx[0].GetValueOut()).c_str(),
-		               FormatMoney(IsProofOfWork()? GetProofOfWorkReward(nBits) : 0).c_str()));
+		               FormatMoney(IsProofOfWork()? GetProofOfWorkReward(nHeight) : 0).c_str()));
 	} else {
-		if (vtx[0].GetValueOut() > (IsProofOfWork()? (GetProofOfWorkReward(nBits) - vtx[0].GetMinFee() + MIN_TX_FEE) : 0))
+		if (vtx[0].GetValueOut() > (IsProofOfWork()? (GetProofOfWorkReward(nHeight) - vtx[0].GetMinFee() + MIN_TX_FEE) : 0))
 		return DoS(50, error("CheckBlock() : coinbase reward exceeded %s > %s", 
 		           FormatMoney(vtx[0].GetValueOut()).c_str(),
-		           FormatMoney(IsProofOfWork()? GetProofOfWorkReward(nBits) : 0).c_str()));
+		           FormatMoney(IsProofOfWork()? GetProofOfWorkReward(nHeight) : 0).c_str()));
 	}
 
     // Check transactions
@@ -2192,6 +2196,7 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
 
 bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 {
+
     // Check for duplicate
     uint256 hash = pblock->GetHash();
     if (mapBlockIndex.count(hash))
@@ -2230,12 +2235,24 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         CBigNum bnNewBlock;
         bnNewBlock.SetCompact(pblock->nBits);
         CBigNum bnRequired;
-        bnRequired.SetCompact(ComputeMinWork(GetLastBlockIndex(pcheckpoint, pblock->IsProofOfStake())->nBits, deltaTime));
+        bnRequired.SetCompact(ComputeMinWork(GetLastBlockIndex(pcheckpoint, pblock->IsProofOfStake())->nBits,
+                              deltaTime, pblock->IsProofOfStake()));
         if (bnNewBlock > bnRequired)
         {
             if (pfrom)
                 pfrom->Misbehaving(100);
-            return error("ProcessBlock() : block with too little %s", pblock->IsProofOfStake()? "proof-of-stake" : "proof-of-work");
+
+            printf("Too little %s: (%s > %s)\n",
+                               pblock->IsProofOfStake()? "proof-of-stake" : "proof-of-work",
+                   bnNewBlock.ToString().c_str(), bnRequired.ToString().c_str());
+            printf("Block %s:", hash.ToString().c_str());
+            return error("ProcessBlock() : block with too little %s",
+                               pblock->IsProofOfStake()? "proof-of-stake" : "proof-of-work");
+        } else {
+            printf("Enough %s: (%s <= %s)\n",
+                               pblock->IsProofOfStake()? "proof-of-stake" : "proof-of-work",
+                   bnNewBlock.ToString().c_str(), bnRequired.ToString().c_str());
+            printf("Block %s:", hash.ToString().c_str());
         }
     }
 
@@ -3373,7 +3390,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CBlock block;
         vRecv >> block;
 
-        printf("received block %s\n", block.GetHash().ToString().substr(0,20).c_str());
+        printf("received block %s\n", block.GetHash().ToString().c_str());
         // block.print();
 
         CInv inv(MSG_BLOCK, block.GetHash());
@@ -4179,8 +4196,10 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake)
         if (fDebug && GetBoolArg("-printpriority"))
             printf("CreateNewBlock(): total size %"PRI64u"\n", nBlockSize);
 
+        unsigned int nHeight = pindexPrev->nHeight+1;
+
         if (pblock->IsProofOfWork())
-            pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward(pblock->nBits);
+            pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward(nHeight);
 
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
@@ -4360,7 +4379,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
                     continue;
                 }
                 strMintWarning = "";
-                printf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString().c_str()); 
+                printf("CPUMiner : proof-of-stake block found %s\n", pblock->GetHash().ToString().c_str());
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 CheckWork(pblock.get(), *pwalletMain, reservekey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
