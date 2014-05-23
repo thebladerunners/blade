@@ -223,6 +223,7 @@ std::string HelpMessage()
         "  -pid=<file>            " + _("Specify pid file (default: Bladed.pid)") + "\n" +
         "  -gen                   " + _("Generate coins") + "\n" +
         "  -gen=0                 " + _("Don't generate coins") + "\n" +
+        "  -stake=0               " + _("Turn off stake minting") + "\n" +  // for big exchanges like polo
         "  -datadir=<dir>         " + _("Specify data directory") + "\n" +
         "  -dbcache=<n>           " + _("Set database cache size in megabytes (default: 25)") + "\n" +
         "  -dblogsize=<n>         " + _("Set database disk log size in megabytes (default: 100)") + "\n" +

@@ -59,6 +59,7 @@ static const uint256 hashGenesisBlockTestNet("0x");
 
 static const int64 nMaxClockDrift = 2 * 60 * 60;        // two hours
 
+static const unsigned int PoSTakeoverHeight = 30000; // about 1 wk after 5/22/2014
 extern CScript COINBASE_FLAGS;
 
 

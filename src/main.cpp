@@ -2050,6 +2050,9 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot) const
 
     // Check coinbase reward
     int64 nTimeBlock = GetBlockTime();
+    if ((nHeight >= PoSTakeoverHeight) && (IsProofOfWork()))
+      return DoS(100, error("CheckBlock() : Proof of work (%f EBT) on or after block %d.\n",
+                            ((double) vtx[0].GetValueOut() / (double) COIN), (int) PoSTakeoverHeight));
     if (nTimeBlock < REWARD_SWITCH_TIME) {
 
 		if (vtx[0].GetValueOut() > (IsProofOfWork()? MAX_MINT_PROOF_OF_WORK_LEGACY : 0))
@@ -2116,6 +2119,10 @@ bool CBlock::AcceptBlock()
         return DoS(10, error("AcceptBlock() : prev block not found"));
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
+
+    // Don't accept any PoW after PoS Takover
+    if (IsProofOfWork() && (nHeight >= (int) PoSTakeoverHeight))
+        return DoS(100, error("CheckBlock() : Proof of work on or after block %d.\n", (int) PoSTakeoverHeight));
 
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
@@ -2226,6 +2233,16 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
             mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
     }
+
+   CBlockLocator locator;
+   unsigned int nHeight = locator.GetBlockIndex()->nHeight;
+
+   if (pblock->IsProofOfWork() && (nHeight >= PoSTakeoverHeight)) {
+        if (pfrom)
+              pfrom->Misbehaving(100);
+        printf("ProcessBlock(): Proof of work on or after block %d.\n", (int) PoSTakeoverHeight);
+        return error("ProcessBlock(): Proof of work on or after block %d.\n", (int) PoSTakeoverHeight);
+   }
 
     CBlockIndex* pcheckpoint = Checkpoints::GetLastSyncCheckpoint();
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain && !Checkpoints::WantedByPendingSyncCheckpoint(hash))
@@ -4200,6 +4217,8 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake)
 
         if (pblock->IsProofOfWork())
             pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward(nHeight);
+
+        printf("CreateNewBlock pblock nValue: %d\n", (int) pblock->vtx[0].vout[0].nValue);
 
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
