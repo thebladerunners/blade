@@ -21,6 +21,7 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
     boost::assign::map_list_of
     ( 0, 0x0e00670bu )
     ( 27010,0x35fd6048u )
+	( 58005,0x47ae81ceu )
 	;
 
 // Get the last stake modifier and its generation time from a given block
